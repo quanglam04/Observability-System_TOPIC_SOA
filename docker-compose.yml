@@ -1,0 +1,97 @@
+version: "3.8"
+
+services:
+  mimir:
+    image: grafana/mimir:latest
+    command: ["-config.file=/etc/mimir.yaml"]
+    ports:
+      - "9009:9009"
+    volumes:
+      - ./observability/mimir/mimir.yaml:/etc/mimir.yaml
+      - mimir-data:/data
+
+  loki:
+    image: grafana/loki:latest
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./observability/loki/loki-config.yaml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+
+  tempo:
+    image: grafana/tempo:latest
+    command: ["-config.file=/etc/tempo.yaml"]
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+    volumes:
+      - ./observability/tempo/tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/var/tempo
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    depends_on:
+      - loki
+      - mimir
+      - tempo
+
+  alloy:
+    image: grafana/alloy:latest
+    ports:
+      - "12345:12345"
+      - "4318:4318"
+    volumes:
+      - ./observability/alloy/config.alloy:/etc/alloy/config.alloy
+    command:
+      [
+        "run",
+        "--server.http.listen-addr=0.0.0.0:12345",
+        "/etc/alloy/config.alloy",
+      ]
+    depends_on:
+      - loki
+      - mimir
+      - tempo
+
+  api-gateway:
+    image:
+    environment:
+      - OTEL_SERVICE_NAME=api-gateway
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+      - USER_SERVICE_URL=http://user-service:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - alloy
+
+  user-service:
+    image:
+    environment:
+      - OTEL_SERVICE_NAME=user-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3002
+    ports:
+      - "3001:3001"
+    depends_on:
+      - alloy
+
+  notification-service:
+    image:
+    environment:
+      - OTEL_SERVICE_NAME=notification-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+    ports:
+      - "3002:3002"
+    depends_on:
+      - alloy
+
+volumes:
+  loki-data:
+  mimir-data:
+  tempo-data:
