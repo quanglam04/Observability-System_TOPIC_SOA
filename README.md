@@ -39,6 +39,6 @@ docker-compose up -d
 | **Loki API**     | `http://localhost:3100`  | Endpoint lưu trữ và truy vấn Logs                        |
 | **Tempo API**    | `http://localhost:3200`  | Endpoint lưu trữ và truy vấn Traces                      |
 | **Mimir API**    | `http://localhost:9009`  | Endpoint lưu trữ và truy vấn Metrics                     |
-| **API Gateway**  | `http://localhost:3000`  | Điểm tiếp nhận request đầu vào của hệ thống              |
-| **User Service** | `http://localhost:3001`  | Service xử lý logic người dùng (Internal/Demo)           |
-| **Notification** | `http://localhost:3002`  | Service gửi thông báo (Internal/Demo)                    |
+| **API Gateway**  | `http://localhost:8000`  | Điểm tiếp nhận request đầu vào của hệ thống              |
+| **User Service** | `http://localhost:8002`  | Service xử lý logic người dùng (Internal/Demo)           |
+| **Notification** | `http://localhost:8001`  | Service gửi thông báo (Internal/Demo)                    |
