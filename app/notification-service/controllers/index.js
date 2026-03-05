@@ -1,8 +1,19 @@
 import { cp } from "fs";
 import logger from "../config/logger.js";
+import nodemailer from "nodemailer";
+import envConfig from "../config/config.js";
+
 /**
  * Logic xử lý viết trong này
  */
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: envConfig.EMAIL_USER,
+    pass: envConfig.EMAIL_PASS,
+  },
+});
 
 class NotificationController {
   test = (req, res) => {
@@ -17,6 +28,15 @@ class NotificationController {
       const { email, subject, message } = req.body;
       
       logger.info(`Xử lý gửi email đến: ${email} với tiêu đề: ${subject}`);
+
+      const mailOptions = {
+        from: `"TOPIC Nhóm LVK": <${envConfig.EMAIL_USER}>`,
+        to: email,
+        subject: subject,
+        text: message,
+      };
+
+      await transporter.sendMail(mailOptions);
 
       logger.info(`Email đã được gửi thành công tới: ${email}`);
       
