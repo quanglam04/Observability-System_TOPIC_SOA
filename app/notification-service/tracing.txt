@@ -1,3 +1,14 @@
 {"traceId":"86bbc34b04930702dc9388bd1ffd718f","spanId":"cd7c8e75355a5ce0","parentSpanId":null,"service":"notification-service","startTime":"12:33:04.886","duration_ms":69}
 {"traceId":"86bbc34b04930702dc9388bd1ffd718f","spanId":"7fc53da78815f32d","parentSpanId":null,"service":"notification-service","startTime":"12:33:04.885","duration_ms":143}
 {"traceId":"86bbc34b04930702dc9388bd1ffd718f","spanId":"54a61bb5cd54bf05","parentSpanId":null,"service":"notification-service","startTime":"12:33:04.699","duration_ms":3238}
+{"traceId":"32e611d76ccca1bf067466b0560a0e79","spanId":"230824a50f1d2f41","parentSpanId":null,"service":"notification-service","startTime":"20:22:51.267","duration_ms":44}
+{"traceId":"32e611d76ccca1bf067466b0560a0e79","spanId":"fd6634348cf020d8","parentSpanId":null,"service":"notification-service","startTime":"20:22:51.267","duration_ms":119}
+{"traceId":"32e611d76ccca1bf067466b0560a0e79","spanId":"f6c6cd0bfad9ae9b","parentSpanId":null,"service":"notification-service","startTime":"20:22:50.681","duration_ms":3342}
+{"traceId":"fd0ae916af4cb37c1458f28cfcd1768f","spanId":"b1d1b9fd92268e97","parentSpanId":null,"service":"notification-service","startTime":"20:26:14.970","duration_ms":21040}
+{"traceId":"fd0ae916af4cb37c1458f28cfcd1768f","spanId":"274d28496857e7b8","parentSpanId":null,"service":"notification-service","startTime":"20:26:14.970","duration_ms":21041}
+{"traceId":"fd0ae916af4cb37c1458f28cfcd1768f","spanId":"89e1631bbb7079b4","parentSpanId":null,"service":"notification-service","startTime":"20:26:36.014","duration_ms":38}
+{"traceId":"fd0ae916af4cb37c1458f28cfcd1768f","spanId":"ec99ef07e8dc8ffa","parentSpanId":null,"service":"notification-service","startTime":"20:26:36.014","duration_ms":122}
+{"traceId":"fd0ae916af4cb37c1458f28cfcd1768f","spanId":"f9c2663a90c408ac","parentSpanId":null,"service":"notification-service","startTime":"20:26:14.809","duration_ms":23288}
+{"traceId":"6a2ddd773cb5d6d16630fa6104f966bc","spanId":"521567b5ef0c9614","parentSpanId":null,"service":"notification-service","startTime":"20:37:03.807","duration_ms":55}
+{"traceId":"6a2ddd773cb5d6d16630fa6104f966bc","spanId":"3fe76be3b72aa3aa","parentSpanId":null,"service":"notification-service","startTime":"20:37:03.807","duration_ms":130}
+{"traceId":"6a2ddd773cb5d6d16630fa6104f966bc","spanId":"1a8f3e2193af4ad5","parentSpanId":null,"service":"notification-service","startTime":"20:37:03.630","duration_ms":3732}

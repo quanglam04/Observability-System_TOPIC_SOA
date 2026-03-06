@@ -51,14 +51,14 @@ const sdk = new NodeSDK({
     "service.name": SERVICE_NAME,
   }),
   traceExporter: new FileSpanExporter(),
-  instrumentations: [getNodeAutoInstrumentations()],
-  // instrumentations: [
-  //   getNodeAutoInstrumentations({
-  //     "@opentelemetry/instrumentation-winston": {
-  //       enabled: false, // Tắt việc tự động chèn trace_id vào log winston
-  //     },
-  //   }),
-  // ],
+  // instrumentations: [getNodeAutoInstrumentations()],
+  instrumentations: [
+    getNodeAutoInstrumentations({
+      "@opentelemetry/instrumentation-winston": {
+        enabled: false, // Tắt việc tự động chèn trace_id vào log winston
+      },
+    }),
+  ],
 });
 
 sdk.start();

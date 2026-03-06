@@ -4,6 +4,7 @@ import envConfig from "./config/config.js";
 import router from "./routes/index.js";
 import logger from "./config/logger.js";
 import { requestCounter, metricsRegister } from "./config/metrics.js";
+import connectDB from "./config/db.js";
 
 const app = express();
 
@@ -44,6 +45,8 @@ app.use("/api/users", router);
 app.use((req, res) => {
   res.status(404).json({ message: "Không tồn tại đường dẫn" });
 });
+
+connectDB();
 
 app.listen(envConfig.PORT, () => {
   console.log(`User service chạy tại port ${envConfig.PORT}`);
