@@ -1,3 +1,4 @@
+import "./config/tracing.js";
 import express from "express";
 import envConfig from "./config/config.js";
 import router from "./routes/index.js";
@@ -44,5 +45,5 @@ app.use((req, res) => {
 });
 
 app.listen(envConfig.PORT, () => {
-  console.log("ok");
+  console.log(`Notification service chạy tại port ${envConfig.PORT}`);
 });

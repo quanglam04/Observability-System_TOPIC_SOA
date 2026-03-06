@@ -75,5 +75,12 @@
     "username": "Vu Nhan Kien",
     "password": "123456",
     "createdAt": "2026-03-06T02:54:10.541Z"
+  },
+  {
+    "id": "1772775184662",
+    "email": "chiuchiu5@gmail.com",
+    "username": "Vu Nhan Kien",
+    "password": "123456",
+    "createdAt": "2026-03-06T05:33:04.662Z"
   }
 ]
