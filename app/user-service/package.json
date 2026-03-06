@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --ignore dummy.json index.js",
+    "dev": "nodemon --ignore logs/ index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

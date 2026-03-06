@@ -20,8 +20,10 @@ class UserController {
     try {
       const { email, username, password} = req.body;
 
+      // Hàm đếm bắt đầu thực hiện query DB đến lúc đến thúc, và tăng biến db_count lên 1
+      // các hàm có query đều thực hiện logic tương tự
       const endFindTimer = dbQueryDuration.startTimer({ operation: "findOne" });
-      const isExist = await User.findOne({ email });
+      const isExist = await User.findOne({ email }); // kẹp giữa để đếm time
       endFindTimer();
       dbQueryCounter.inc({ operation: "findOne", status: "success" });
 
@@ -35,19 +37,22 @@ class UserController {
       endCreateTimer();
       dbQueryCounter.inc({ operation: "create", status: "success" });
 
-      try {
-        await axios.post(
-          `${envConfig.NOTIFICATION_SERVICE_HOST}${envConfig.NOTIFICATION_SERVICE_BASE_API}/send-email`,
-          {
-            email: email,
-            subject: "Xác nhận tài khoản",
-            message: `Chào ${username}, bạn đã đăng ký thành công.`,
-          }
-        );
+      // --- CHẠY NGẦM (FIRE AND FORGET) ---
+      // Không dùng await, nối trực tiếp .then() và .catch() để xử lý kết quả ở background
+      axios.post(
+        `${envConfig.NOTIFICATION_SERVICE_HOST}${envConfig.NOTIFICATION_SERVICE_BASE_API}/send-email`,
+        {
+          email: email,
+          subject: "Xác nhận tài khoản",
+          message: `Chào ${username}, bạn đã đăng ký thành công.`,
+        }
+      )
+      .then(() => {
         logger.info(`Đã yêu cầu Notification Service gửi email cho: ${email}`);
-      } catch (notifyError) {
+      })
+      .catch((notifyError) => {
         logger.error(`Lỗi gọi Notification Service: ${notifyError.message}`);
-      }
+      });
 
       // Trả về kết quả cho gateway
       res.status(201).json({

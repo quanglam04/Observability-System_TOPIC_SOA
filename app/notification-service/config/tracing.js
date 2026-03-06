@@ -11,10 +11,20 @@ const SERVICE_NAME = "notification-service";
 
 class FileSpanExporter {
   constructor() {
-    this.filePath = path.join(process.cwd(), "tracing.txt");
+    // Khai báo đường dẫn tới thư mục logs
+    const logsDir = path.join(process.cwd(), "logs");
+    
+    // Kiểm tra thư mục logs có chưa
+    if (!fs.existsSync(logsDir)) {
+      fs.mkdirSync(logsDir, { recursive: true });
+    }
+
+    // Đổi tên file và đường dẫn thành logs/tracing.json
+    this.filePath = path.join(logsDir, "tracing.json");
   }
 
   export(spans, resultCallback) {
+    // format lại time
     for (const span of spans) {
       const startMs = span.startTime[0] * 1000 + span.startTime[1] / 1000000;
       const endMs = span.endTime[0] * 1000 + span.endTime[1] / 1000000;
@@ -36,6 +46,7 @@ class FileSpanExporter {
         duration_ms: duration_ms,
       };
 
+      // Ghi nối tiếp vào file tracing.json
       fs.appendFileSync(this.filePath, JSON.stringify(traceData) + "\n", "utf8");
     }
     resultCallback({ code: 0 });
@@ -51,7 +62,7 @@ const sdk = new NodeSDK({
     "service.name": SERVICE_NAME,
   }),
   traceExporter: new FileSpanExporter(),
-  // instrumentations: [getNodeAutoInstrumentations()],
+  // instrumentations: [getNodeAutoInstrumentations()], // cái này là nó sẽ tự động thêm traceID với spanID vào mấy cái logs in ở terminal mình 0 cần thiết tại nhìn nó dài
   instrumentations: [
     getNodeAutoInstrumentations({
       "@opentelemetry/instrumentation-winston": {
