@@ -42,3 +42,78 @@ docker-compose up -d --build
 | **API Gateway**  | `http://localhost:8000`  | Điểm tiếp nhận request đầu vào của hệ thống              |
 | **User Service** | `http://localhost:8002`  | Service xử lý logic người dùng (Internal/Demo)           |
 | **Notification** | `http://localhost:8001`  | Service gửi thông báo (Internal/Demo)                    |
+
+## Kết quả
+
+![anh](/public/result.png)
+
+<p align="center"><em>Giao diện Grafana Dashboard</em></p>
+
+---
+
+### Xem Metrics (CPU, RAM, Request Rate)
+
+Dashboard chính hiển thị 4 panel metrics:
+
+| Panel                  | Mô tả                                 | Cách đọc                           |
+| :--------------------- | :------------------------------------ | :--------------------------------- |
+| **HTTP Requests/giây** | Số request mỗi giây theo từng service | Đỉnh cao = traffic lớn             |
+| **RAM Usage (MB)**     | Lượng RAM đang dùng                   | Tăng liên tục = có thể memory leak |
+| **CPU Usage**          | Mức độ sử dụng CPU                    | Spike cao = xử lý nặng             |
+| **Total Requests**     | Tổng số request từ khi khởi động      | Dùng để so sánh giữa các service   |
+
+**Lọc theo service:** Dùng dropdown **Service** ở góc trên trái để chọn `api-gateway`, `user-service`, hoặc `notification-service`.
+
+---
+
+### Xem Logs
+
+Cuộn xuống phần **Logs** trên Dashboard, hoặc vào **Explore → Loki** để query chi tiết hơn.
+
+**Các query Loki hay dùng:**
+
+```logql
+# Xem tất cả log của 1 service
+{service="api-gateway"}
+
+# Chỉ xem log lỗi
+{service="api-gateway"} | json | level="error"
+
+# Tìm log theo đường dẫn API cụ thể
+{service="user-service"} | json | path="/api/users/login"
+
+# Xem log của tất cả service cùng lúc
+{service=~"api-gateway|user-service|notification-service"} | json
+
+# Tìm log theo từ khóa
+{service="api-gateway"} |= "error"
+```
+
+---
+
+### Trace một Request (Tracing)
+
+Tracing giúp theo dõi một request đi qua bao nhiêu service, mất bao lâu ở mỗi bước.
+
+**Cách trace:**
+
+1. Vào **Explore → Tempo**
+2. Chọn **Search** tab
+3. Chọn **Service Name** → ví dụ `api-gateway`
+4. Bấm **Run query**
+5. Click vào một **Trace ID** để xem chi tiết từng span
+
+**Hoặc dùng TraceQL:**
+
+```traceql
+# Tìm tất cả trace của api-gateway
+{resource.service.name="api-gateway"}
+
+# Tìm trace chậm hơn 500ms
+{resource.service.name="api-gateway"} | duration > 500ms
+
+# Tìm trace có lỗi
+{resource.service.name="api-gateway"} | status = error
+```
+
+---
