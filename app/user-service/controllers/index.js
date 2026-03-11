@@ -136,6 +136,110 @@ class UserController {
       res.status(500).json({ message: "Lỗi hệ thống khi lấy thông tin" });
     }
   }
+
+  async forgotPassword(req, res) {
+    try {
+      const {email} = req.body;
+      
+      const endFindTimer = dbQueryDuration.startTimer({operation: "findOne"});
+      const user = await User.findOne({email});
+      endFindTimer();
+      dbQueryCounter.inc({operation: "findOne", status: "success"});
+
+      if(!user){
+        logger.warn(`Thất bại: Email ${email} không tồn tại`);
+        return res.status(404).json({message: "Email không tồn tại trong hệ thống"})
+      }
+
+      // tạo mật khẩu ngẫu nhiên để gửi qua email
+      const newPassword = Math.random().toString(36).slice(-8);
+
+      const endUpdateTimer = dbQueryDuration.startTimer({operation: "updateOne"});
+      user.password = newPassword;
+      await user.save();
+      endUpdateTimer();
+      dbQueryCounter.inc({operation: "updateOne", status: "success"});
+
+      // gọi sang notification để gửi mail kèm mật khẩu mới
+      axios.post(
+        `${envConfig.NOTIFICATION_SERVICE_HOST}${envConfig.NOTIFICATION_SERVICE_BASE_API}/send-email`,
+        {
+          email: email,
+          subject: "Cấp lại mật khẩu mới - TOPIC Nhóm LVK",
+          message: `Chào ${user.username},\n\nMật khẩu mới của bạn là: ${newPassword}\n\nVui lòng đăng nhập lại và tiến hành đổi lại mật khẩu mới.`,
+        }
+      )
+      .then(() => {
+        logger.info(`Đã yêu cầu Notification Service gửi mật khẩu mới cho: ${email}`);
+      })
+      .catch((notifyError) => {
+        logger.error(`Lỗi gọi Notification Service: ${notifyError.message}`);
+      })
+
+      logger.info(`Xử lý quên mật khẩu thành công cho: ${email}`);
+      res.status(200).json({
+        message: "Mật khẩu mới đã được gửi vào email",
+      });
+    } catch (error) {
+      dbQueryCounter.inc({ operation: "db_error", status: "error" });
+
+      logger.error(`Lỗi quên mật khẩu: ${error.message}`);
+      res.status(500).json({ message: "Lỗi hệ thống khi xử lý quên mật khẩu" });
+    }
+  }
+  
+  async changePassword(req, res){
+    try {
+      const userId = req.params.id;
+      const {oldPassword, newPassword} = req.body;
+
+      const endFindByIdTimer = dbQueryDuration.startTimer({ operation: "findById" });
+      const user = await User.findById(userId);
+      endFindByIdTimer();
+      dbQueryCounter.inc({ operation: "findById", status: "success" });
+
+      if(!user){
+        logger.warn(`Không tìm thấy user với Id ${userId}`);
+        return res.status(404).json({ message: "Người dùng không tồn tại!" });
+      }
+
+      if (user.password !== oldPassword) {
+        logger.warn(`Sai mật khẩu cũ cho user Id ${userId}`);
+        return res.status(400).json({ message: "Mật khẩu cũ không chính xác!" });
+      }
+
+      const endUpdateTimer = dbQueryDuration.startTimer({ operation: "updateOne" });
+      user.password = newPassword;
+      await user.save();
+      endUpdateTimer();
+      dbQueryCounter.inc({ operation: "updateOne", status: "success" });
+
+      axios.post(
+        `${envConfig.NOTIFICATION_SERVICE_HOST}${envConfig.NOTIFICATION_SERVICE_BASE_API}/send-email`,
+        {
+          email: user.email,
+          subject: "Cảnh báo bảo mật: Thay đổi mật khẩu thành công",
+          message: `Chào ${user.username},\n\nMật khẩu tài khoản của bạn vừa được thay đổi thành công vào lúc ${new Date().toLocaleString()}.`,
+        }
+      )
+      .then(() => {
+        logger.info(`Đã yêu cầu Notification Service gửi email cảnh báo bảo mật cho: ${user.email}`);
+      })
+      .catch((notifyError) => {
+        logger.error(`Lỗi gọi Notification Service: ${notifyError.message}`);
+      });
+
+      logger.info(`Đổi mật khẩu thành công cho user Id: ${userId}`);
+      res.status(200).json({
+        message: "Đổi mật khẩu thành công",
+      });
+    } catch (error) {
+      dbQueryCounter.inc({ operation: "db_error", status: "error" });
+      
+      logger.error(`Lỗi đổi mật khẩu: ${error.message}`);
+      res.status(500).json({ message: "Lỗi hệ thống khi đổi mật khẩu" });
+    }
+  }
 }
 
 const userController = new UserController();
