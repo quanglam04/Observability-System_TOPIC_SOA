@@ -28,7 +28,7 @@ const logger = createLogger({
       format: combine(
         timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
         printf(({ level, message, timestamp }) => {
-          const paddedLevel = colors[level].toUpperCase().padEnd(5);
+          const paddedLevel = level.toUpperCase().padEnd(5);
           return `${timestamp} ${paddedLevel}: ${message}`;
         }),
       ),
