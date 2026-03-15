@@ -13,7 +13,7 @@ ingester:
     dir: /loki/wal
 
 compactor:
-  working_directory: /loki/compactor # thêm dòng này
+  working_directory: /loki/compactor
 
 schema_config:
   configs:

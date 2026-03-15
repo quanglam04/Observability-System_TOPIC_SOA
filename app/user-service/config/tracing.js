@@ -12,7 +12,7 @@ const sdk = new NodeSDK({
     "service.name": SERVICE_NAME,
   }),
   traceExporter: new OTLPTraceExporter({
-    url: "http://alloy:4317", // push lên Alloy, Alloy forward sang Tempo
+    url: "http://alloy:4317",
   }),
   instrumentations: [
     getNodeAutoInstrumentations({

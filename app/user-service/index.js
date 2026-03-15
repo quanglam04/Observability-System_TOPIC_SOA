@@ -38,5 +38,5 @@ app.use((req, res) => {
 connectDB();
 
 app.listen(envConfig.PORT, () => {
-  console.log(`User service chạy tại port ${envConfig.PORT}`);
+  logger.info(`User service chạy tại port ${envConfig.PORT}`);
 });

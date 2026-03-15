@@ -19,10 +19,8 @@ class UserController {
     try {
       const { email, username, password } = req.body;
 
-      // Hàm đếm bắt đầu thực hiện query DB đến lúc đến thúc, và tăng biến db_count lên 1
-      // các hàm có query đều thực hiện logic tương tự
       const endFindTimer = dbQueryDuration.startTimer({ operation: "findOne" });
-      const isExist = await User.findOne({ email }); // kẹp giữa để đếm time
+      const isExist = await User.findOne({ email });
       endFindTimer();
       dbQueryCounter.inc({ operation: "findOne", status: "success" });
 
@@ -38,8 +36,6 @@ class UserController {
       endCreateTimer();
       dbQueryCounter.inc({ operation: "create", status: "success" });
 
-      // --- CHẠY NGẦM (FIRE AND FORGET) ---
-      // Không dùng await, nối trực tiếp .then() và .catch() để xử lý kết quả ở background
       await axios
         .post(
           `${envConfig.NOTIFICATION_SERVICE_HOST}${envConfig.NOTIFICATION_SERVICE_BASE_API}/send-email`,
@@ -62,7 +58,6 @@ class UserController {
           });
         });
 
-      // Trả về kết quả cho gateway
       res.status(201).json({
         message: "Đăng ký thành công",
         user: {
@@ -167,7 +162,6 @@ class UserController {
           .json({ message: "Email không tồn tại trong hệ thống" });
       }
 
-      // tạo mật khẩu ngẫu nhiên để gửi qua email
       const newPassword = Math.random().toString(36).slice(-8);
 
       const endUpdateTimer = dbQueryDuration.startTimer({
@@ -178,8 +172,7 @@ class UserController {
       endUpdateTimer();
       dbQueryCounter.inc({ operation: "updateOne", status: "success" });
 
-      // gọi sang notification để gửi mail kèm mật khẩu mới
-      axios
+      await axios
         .post(
           `${envConfig.NOTIFICATION_SERVICE_HOST}${envConfig.NOTIFICATION_SERVICE_BASE_API}/send-email`,
           {
@@ -241,7 +234,7 @@ class UserController {
       endUpdateTimer();
       dbQueryCounter.inc({ operation: "updateOne", status: "success" });
 
-      axios
+      await axios
         .post(
           `${envConfig.NOTIFICATION_SERVICE_HOST}${envConfig.NOTIFICATION_SERVICE_BASE_API}/send-email`,
           {

@@ -3,6 +3,7 @@ import express from "express";
 import envConfig from "./config/config.js";
 import router from "./routes/index.js";
 import { metricsRegister } from "./config/metrics.js";
+import logger from "./config/logger.js";
 
 const app = express();
 
@@ -17,5 +18,5 @@ app.use((req, res) => {
 });
 
 app.listen(envConfig.PORT, () => {
-  console.log(`API-Gateway chạy tại port ${envConfig.PORT}`);
+  logger.info(`API-Gateway chạy tại port ${envConfig.PORT}`);
 });

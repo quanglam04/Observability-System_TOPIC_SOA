@@ -1,8 +1,8 @@
 import logger from "../config/logger.js";
+
 /**
  * Logic xử lý viết trong này
  */
-
 class GatewayController {
   test = (req, res) => {
     logger.info("OK");

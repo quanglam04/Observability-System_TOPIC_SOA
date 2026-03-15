@@ -1,4 +1,4 @@
-// ── LOGS: nhận push từ winston-loki ──────────────────────────
+// nhận push logs từ winston-loki
 loki.source.api "push" {
   http {
     listen_address = "0.0.0.0"
@@ -7,7 +7,7 @@ loki.source.api "push" {
   forward_to = [loki.write.default.receiver]
 }
 
-// ── LOGS: thu thập từ Docker containers ──────────────────────
+// thu thập logs từ Docker containers 
 discovery.docker "containers" {
   host = "unix:///var/run/docker.sock"
 }
@@ -44,7 +44,7 @@ loki.write "default" {
   }
 }
 
-// ── METRICS: scrape /metrics từng service ────────────────────
+// scrape /metrics từng service 
 prometheus.scrape "services" {
   targets = [
     {"__address__" = "api-gateway:8000",         "__metrics_path__" = "/metrics"},
@@ -64,7 +64,7 @@ prometheus.remote_write "mimir" {
   }
 }
 
-// ── TRACES: nhận OTLP gRPC từ OTel SDK ───────────────────────
+// nhận OTLP gRPC từ OTel SDK 
 otelcol.receiver.otlp "default" {
   grpc {
     endpoint = "0.0.0.0:4317"

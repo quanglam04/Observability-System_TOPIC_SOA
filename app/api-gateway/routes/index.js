@@ -4,10 +4,10 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import envConfig from "../config/config.js";
 import logger from "../config/logger.js";
 import { requestCounter, metricsRegister } from "../config/metrics.js";
+
 /**
  * Định nghĩa các route trong này -> gọi hàm controller để xử lý
  */
-
 const router = express.Router();
 
 router.get("/metrics", async (req, res) => {
@@ -25,7 +25,6 @@ router.use((req, res, next) => {
 
   res.on("finish", () => {
     if (req.originalUrl !== "/metrics") {
-      // Tăng biến đếm request lên 1, phân loại theo method, đường dẫn
       requestCounter.inc({
         method: req.method,
         path: req.originalUrl,
